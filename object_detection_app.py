@@ -3,10 +3,13 @@ from PIL import Image
 import io
 import base64
 import numpy as np
-import time
+from dotenv import load_dotenv
 import requests
 import json
+import os
 
+
+load_dotenv()
 
 def array_to_base64(image):
     im = Image.fromarray(image.astype("uint8"))
@@ -31,8 +34,8 @@ if picture:
     image = np.array(Image.open(picture))
     encoded_image = array_to_base64(image)
     data = json.dumps({"encoded_image": encoded_image})
-    # response = requests.request("POST", "http://127.0.0.1:8000/detect-objects", data=data)
-    response = requests.request("POST", "http://143.244.187.137/detect-objects", data=data)
+    url = os.getenv("FASTAPI_URL")
+    response = requests.request("POST", url, data=data)
     if response.status_code == 200:
         response_json = response.json()
         final_image = base64_to_array(response_json["encoded_image"])
